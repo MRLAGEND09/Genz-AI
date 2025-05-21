@@ -2,14 +2,14 @@ import { Webhook } from "svix";
 import connectDB from "../../../config/db";
 import User from "../../../models/User";
 import { headers } from "next/headers";
-import { NextResponse } from "next/server";
+import {NextResponse } from "next/server";
 
 
 export async function POST(req){
-    const wh = new Webhook(process.env.SINGING_SECRET)
+    const wh = new Webhook(process.env.SIGNING_SECRET)
     const haderPayLoad = await headers()
     const svixHeaders = {
-        "svix-id": haderPayLood.get("svix-id"),
+        "svix-id": haderPayLoad.get("svix-id"),
         "svix-signature": haderPayLoad.get("svix-signature"), 
     };
 
@@ -35,10 +35,10 @@ export async function POST(req){
         case 'user.created':
             await User.create(userData);
             break;
-    case 'user.created':
+    case 'user.updated':
             await User.findByIdAndUpdate(data.id, userData);
             break;
-              case 'user.created':
+    case 'user.deleted':
             await User.findByIdAndDelete(data.id);
             break;
         default:
