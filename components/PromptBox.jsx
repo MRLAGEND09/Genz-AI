@@ -1,12 +1,13 @@
 import Image from "next/image";
-import React, { useState } from 'react';
-import { assets } from '../assets/assets';
+import React, { useState } from "react";
+import { assets } from "../assets/assets";
 import { useAppContext } from "@/context/AppContext";
 import toast from "react-hot-toast";
 import axios from "axios";
 
 const PromptBox = ({ setIsLoading, isLoading, messages, setMessages }) => {
-  const [prompt, setPrompt] = useState('');
+  const [prompt, setPrompt] = useState("");
+  const [aiMode, setAiMode] = useState("deepthink"); // <-- new state for mode
   const { user, chats, setChats, selectedChat, setSelectedChat } = useAppContext();
 
   const handleKeyDown = (e) => {
@@ -14,6 +15,12 @@ const PromptBox = ({ setIsLoading, isLoading, messages, setMessages }) => {
       e.preventDefault();
       sendPrompt(e);
     }
+  };
+
+  const handleInputChange = (e) => {
+    setPrompt(e.target.value);
+    e.target.style.height = "auto";
+    e.target.style.height = e.target.scrollHeight + "px";
   };
 
   const sendPrompt = async (e) => {
@@ -28,7 +35,7 @@ const PromptBox = ({ setIsLoading, isLoading, messages, setMessages }) => {
 
     try {
       setIsLoading(true);
-      setPrompt('');
+      setPrompt("");
 
       const userPrompt = {
         role: "user",
@@ -36,10 +43,8 @@ const PromptBox = ({ setIsLoading, isLoading, messages, setMessages }) => {
         timestamp: Date.now(),
       };
 
-      // Instantly update UI with user message
-      setMessages(prev => [...prev, userPrompt]);
+      setMessages((prev) => [...prev, userPrompt]);
 
-      // Update context chats & selectedChat
       setChats((prevChats) =>
         prevChats.map((chat) =>
           chat._id === selectedChat._id
@@ -53,15 +58,16 @@ const PromptBox = ({ setIsLoading, isLoading, messages, setMessages }) => {
         messages: [...(prev?.messages || []), userPrompt],
       }));
 
-      const { data } = await axios.post('/api/chat/ai', {
+      const { data } = await axios.post("/api/chat/ai", {
         chatId: selectedChat._id,
         prompt: promptCopy,
+        mode: aiMode,
       });
 
       if (data.success) {
         const aiMessage = data.data;
-        // Update UI with AI response
-        setMessages(prev => [...prev, aiMessage]);
+
+        setMessages((prev) => [...prev, aiMessage]);
 
         setChats((prevChats) =>
           prevChats.map((chat) =>
@@ -100,16 +106,26 @@ const PromptBox = ({ setIsLoading, isLoading, messages, setMessages }) => {
         rows={2}
         placeholder="Message DeepSeek"
         required
-        onChange={(e) => setPrompt(e.target.value)}
+        onChange={handleInputChange}
         value={prompt}
       />
       <div className="flex justify-between items-center text-sm mt-2">
         <div className="flex items-center gap-2">
-          <p className="flex items-center gap-2 text-xs border border-gray-300/40 px-2 py-1 rounded-full cursor-pointer hover:bg-gray-500/20 transition">
+          <p
+            onClick={() => setAiMode("deepthink")}
+            className={`flex items-center gap-2 text-xs border border-gray-300/40 px-2 py-1 rounded-full cursor-pointer hover:bg-gray-500/20 transition ${
+              aiMode === "deepthink" ? "bg-gray-500/40" : ""
+            }`}
+          >
             <Image className="h-5" src={assets.deepthink_icon} alt="DeepThink" />
             DeepThink (R1)
           </p>
-          <p className="flex items-center gap-2 text-xs border border-gray-300/40 px-2 py-1 rounded-full cursor-pointer hover:bg-gray-500/20 transition">
+          <p
+            onClick={() => setAiMode("search")}
+            className={`flex items-center gap-2 text-xs border border-gray-300/40 px-2 py-1 rounded-full cursor-pointer hover:bg-gray-500/20 transition ${
+              aiMode === "search" ? "bg-gray-500/40" : ""
+            }`}
+          >
             <Image className="h-5" src={assets.search_icon} alt="Search" />
             Search
           </p>
@@ -119,9 +135,9 @@ const PromptBox = ({ setIsLoading, isLoading, messages, setMessages }) => {
           <Image className="w-4 cursor-pointer" src={assets.pin_icon} alt="Pin" />
           <button
             type="submit"
-            disabled={!prompt.trim()}
+            disabled={!prompt.trim() || isLoading}
             className={`rounded-full p-2 cursor-pointer ${
-              prompt.trim() ? "bg-primary" : "bg-[#71717a]"
+              prompt.trim() && !isLoading ? "bg-primary" : "bg-[#71717a]"
             }`}
           >
             <Image

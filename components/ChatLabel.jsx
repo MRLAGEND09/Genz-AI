@@ -1,54 +1,56 @@
-import Image from 'next/image'
-import React from 'react'
-import { assets } from '../assets/assets'
-import { useAppContext } from '@/context/AppContext'
-import axios from 'axios'
-import toast from 'react-hot-toast'
+import Image from 'next/image';
+import React from 'react';
+import { assets } from '../assets/assets';
+import { useAppContext } from '@/context/AppContext';
+import axios from 'axios';
+import toast from 'react-hot-toast';
 
 const ChatLabel = ({ openMenu, setOpenMenu, id, name }) => {
-  const { fetchUserChats, chats, setSelectedChat } = useAppContext()
+  const { fetchUserChats, chats, setSelectedChat } = useAppContext();
 
   const selectChat = () => {
-    const chatData = chats.find(chat => chat._id === id)
-    setSelectedChat(chatData)
-    console.log('Selected chat:', chatData)
-  }
+    const chatData = chats.find(chat => chat._id === id);
+    if (chatData) {
+      setSelectedChat(chatData);
+      console.log('Selected chat:', chatData);
+    }
+  };
 
   const renameHandler = async () => {
     try {
-      const newName = prompt('Enter new chat name:')?.trim()
-      if (!newName) return
-      const { data } = await axios.post('/api/chat/rename', { chatId: id, name: newName })
+      const newName = prompt('Enter new chat name:')?.trim();
+      if (!newName) return;
+      const { data } = await axios.post('/api/chat/rename', { chatId: id, name: newName });
       if (data.success) {
-        toast.success(data.message)
-        fetchUserChats()
-        setOpenMenu({ id: 0, open: false })
+        toast.success(data.message);
+        fetchUserChats();
+        setOpenMenu({ id: 0, open: false });
       } else {
-        toast.error(data.message)
+        toast.error(data.message);
       }
     } catch (error) {
-      toast.error(error?.message || 'Something went wrong.')
+      toast.error(error?.message || 'Something went wrong.');
     }
-  }
+  };
 
   const deleteHandler = async () => {
     try {
-      const confirmDelete = confirm('Are you sure you want to delete this chat?')
-      if (!confirmDelete) return
-      const { data } = await axios.post('/api/chat/delete', { chatId: id })
+      const confirmDelete = confirm('Are you sure you want to delete this chat?');
+      if (!confirmDelete) return;
+      const { data } = await axios.post('/api/chat/delete', { chatId: id });
       if (data.success) {
-        toast.success(data.message)
-        fetchUserChats()
-        setOpenMenu({ id: 0, open: false })
+        toast.success(data.message);
+        fetchUserChats();
+        setOpenMenu({ id: 0, open: false });
       } else {
-        toast.error(data.message)
+        toast.error(data.message);
       }
     } catch (error) {
-      toast.error(error?.message || 'Something went wrong.')
+      toast.error(error?.message || 'Something went wrong.');
     }
-  }
+  };
 
-  const showMenu = openMenu.id === id && openMenu.open
+  const showMenu = openMenu.id === id && openMenu.open;
 
   return (
     <div
@@ -58,8 +60,8 @@ const ChatLabel = ({ openMenu, setOpenMenu, id, name }) => {
       <p className="group-hover:max-w-5/6 truncate">{name}</p>
       <div
         onClick={e => {
-          e.stopPropagation()
-          setOpenMenu({ id, open: !openMenu.open })
+          e.stopPropagation();
+          setOpenMenu({ id, open: !openMenu.open });
         }}
         className="group relative flex items-center justify-center h-6 w-6 aspect-square hover:bg-black/80 rounded-lg"
       >
@@ -91,7 +93,7 @@ const ChatLabel = ({ openMenu, setOpenMenu, id, name }) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ChatLabel
+export default ChatLabel;

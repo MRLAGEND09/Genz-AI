@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import React, { useEffect } from 'react'
 import { assets } from '../assets/assets'
-import Markdown from 'react-markdown'
+import ReactMarkdown from 'react-markdown'
 import Prism from 'prismjs'
 import toast from 'react-hot-toast'
 
@@ -43,7 +43,20 @@ const Message = ({ role, content }) => {
                         <>
                             <Image src={assets.logo_icon} alt='' className='h-9 w-9 p-1 border border-white/15 rounded-full' />
                             <div className='space-y-4 w-full overflow-x-auto'>
-                                <Markdown>{content}</Markdown>
+                                <ReactMarkdown
+                                    components={{
+                                        a: props => (
+                                            <a
+                                                {...props}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-blue-400 underline"
+                                            />
+                                        )
+                                    }}
+                                >
+                                    {content}
+                                </ReactMarkdown>
                             </div>
                         </>
                     )}

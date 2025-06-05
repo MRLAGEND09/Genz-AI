@@ -43,7 +43,7 @@ export default function Home() {
           <>
             <div className="flex items-center gap-3">
               <Image className="h-16" src={assets.logo_icon} alt="logo" />
-              <p className="text-2xl font-medium">Hi, I'm DeepSeek.</p>
+              <p className="text-2xl font-medium">Hi, I'm GenZ AI.</p>
             </div>
             <p className="text-sm mt-2">How can I help you today?</p>
           </>
