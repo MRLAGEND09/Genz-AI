@@ -1,3 +1,4 @@
+export const maxDuration = 45; // 1 minute
 import { getAuth } from "@clerk/nextjs/server";
 import connectDB from "../../../../config/db";
 import Chat from "../../../../models/Chat";
