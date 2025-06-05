@@ -104,7 +104,7 @@ const PromptBox = ({ setIsLoading, isLoading, messages, setMessages }) => {
         onKeyDown={handleKeyDown}
         className="outline-none w-full resize-none overflow-hidden break-words bg-transparent text-white placeholder-gray-400"
         rows={2}
-        placeholder="Message DeepSeek"
+        placeholder="Message GENZ AI"
         required
         onChange={handleInputChange}
         value={prompt}
